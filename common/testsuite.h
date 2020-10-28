@@ -10656,22 +10656,20 @@ static void mavlink_test_stg_status(uint8_t system_id, uint8_t component_id, mav
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
     mavlink_stg_status_t packet_in = {
-        17235,17339,17443,17547,17651,17755,17859,17963,18067,18171,18275,199,10,77
+        17235,17339,17443,17547,17651,17755,17859,175,242,53,120,187
     };
     mavlink_stg_status_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
         packet1.voltage_battery = packet_in.voltage_battery;
         packet1.voltage_generator = packet_in.voltage_generator;
         packet1.current_battery = packet_in.current_battery;
-        packet1.current_generator = packet_in.current_generator;
         packet1.power_load = packet_in.power_load;
         packet1.current_charge = packet_in.current_charge;
-        packet1.temperarture_bridge = packet_in.temperarture_bridge;
-        packet1.voltage_drop = packet_in.voltage_drop;
         packet1.rpm_cranckshaft = packet_in.rpm_cranckshaft;
-        packet1.halls_errors = packet_in.halls_errors;
         packet1.uptime = packet_in.uptime;
-        packet1.current_starter = packet_in.current_starter;
+        packet1.fuel_level = packet_in.fuel_level;
+        packet1.bridge_temperature = packet_in.bridge_temperature;
+        packet1.engine_temperature = packet_in.engine_temperature;
         packet1.motor_state = packet_in.motor_state;
         packet1.stg_errors_bitmask = packet_in.stg_errors_bitmask;
         
@@ -10688,12 +10686,12 @@ static void mavlink_test_stg_status(uint8_t system_id, uint8_t component_id, mav
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_stg_status_pack(system_id, component_id, &msg , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.current_generator , packet1.power_load , packet1.current_charge , packet1.temperarture_bridge , packet1.current_starter , packet1.voltage_drop , packet1.rpm_cranckshaft , packet1.halls_errors , packet1.uptime , packet1.motor_state , packet1.stg_errors_bitmask );
+    mavlink_msg_stg_status_pack(system_id, component_id, &msg , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.power_load , packet1.current_charge , packet1.rpm_cranckshaft , packet1.uptime , packet1.fuel_level , packet1.bridge_temperature , packet1.engine_temperature , packet1.motor_state , packet1.stg_errors_bitmask );
     mavlink_msg_stg_status_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_stg_status_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.current_generator , packet1.power_load , packet1.current_charge , packet1.temperarture_bridge , packet1.current_starter , packet1.voltage_drop , packet1.rpm_cranckshaft , packet1.halls_errors , packet1.uptime , packet1.motor_state , packet1.stg_errors_bitmask );
+    mavlink_msg_stg_status_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.power_load , packet1.current_charge , packet1.rpm_cranckshaft , packet1.uptime , packet1.fuel_level , packet1.bridge_temperature , packet1.engine_temperature , packet1.motor_state , packet1.stg_errors_bitmask );
     mavlink_msg_stg_status_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -10706,7 +10704,7 @@ static void mavlink_test_stg_status(uint8_t system_id, uint8_t component_id, mav
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-    mavlink_msg_stg_status_send(MAVLINK_COMM_1 , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.current_generator , packet1.power_load , packet1.current_charge , packet1.temperarture_bridge , packet1.current_starter , packet1.voltage_drop , packet1.rpm_cranckshaft , packet1.halls_errors , packet1.uptime , packet1.motor_state , packet1.stg_errors_bitmask );
+    mavlink_msg_stg_status_send(MAVLINK_COMM_1 , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.power_load , packet1.current_charge , packet1.rpm_cranckshaft , packet1.uptime , packet1.fuel_level , packet1.bridge_temperature , packet1.engine_temperature , packet1.motor_state , packet1.stg_errors_bitmask );
     mavlink_msg_stg_status_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
