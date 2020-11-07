@@ -10644,6 +10644,71 @@ static void mavlink_test_wheel_distance(uint8_t system_id, uint8_t component_id,
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
+static void mavlink_test_stg_status_new(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+#ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
+    mavlink_status_t *status = mavlink_get_channel_status(MAVLINK_COMM_0);
+        if ((status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) && MAVLINK_MSG_ID_STG_STATUS_NEW >= 256) {
+            return;
+        }
+#endif
+    mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+    mavlink_stg_status_new_t packet_in = {
+        17235,17339,17443,17547,17651,17755,17859,175,242,53,120,187
+    };
+    mavlink_stg_status_new_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        packet1.voltage_battery = packet_in.voltage_battery;
+        packet1.voltage_generator = packet_in.voltage_generator;
+        packet1.current_battery = packet_in.current_battery;
+        packet1.power_load = packet_in.power_load;
+        packet1.current_charge = packet_in.current_charge;
+        packet1.rpm_cranckshaft = packet_in.rpm_cranckshaft;
+        packet1.uptime = packet_in.uptime;
+        packet1.fuel_level = packet_in.fuel_level;
+        packet1.bridge_temperature = packet_in.bridge_temperature;
+        packet1.engine_temperature = packet_in.engine_temperature;
+        packet1.motor_state = packet_in.motor_state;
+        packet1.stg_errors_bitmask = packet_in.stg_errors_bitmask;
+        
+        
+#ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
+        if (status->flags & MAVLINK_STATUS_FLAG_OUT_MAVLINK1) {
+           // cope with extensions
+           memset(MAVLINK_MSG_ID_STG_STATUS_NEW_MIN_LEN + (char *)&packet1, 0, sizeof(packet1)-MAVLINK_MSG_ID_STG_STATUS_NEW_MIN_LEN);
+        }
+#endif
+        memset(&packet2, 0, sizeof(packet2));
+    mavlink_msg_stg_status_new_encode(system_id, component_id, &msg, &packet1);
+    mavlink_msg_stg_status_new_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+    mavlink_msg_stg_status_new_pack(system_id, component_id, &msg , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.power_load , packet1.current_charge , packet1.rpm_cranckshaft , packet1.uptime , packet1.fuel_level , packet1.bridge_temperature , packet1.engine_temperature , packet1.motor_state , packet1.stg_errors_bitmask );
+    mavlink_msg_stg_status_new_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+    mavlink_msg_stg_status_new_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.power_load , packet1.current_charge , packet1.rpm_cranckshaft , packet1.uptime , packet1.fuel_level , packet1.bridge_temperature , packet1.engine_temperature , packet1.motor_state , packet1.stg_errors_bitmask );
+    mavlink_msg_stg_status_new_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+            comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+    mavlink_msg_stg_status_new_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+    mavlink_msg_stg_status_new_send(MAVLINK_COMM_1 , packet1.voltage_battery , packet1.voltage_generator , packet1.current_battery , packet1.power_load , packet1.current_charge , packet1.rpm_cranckshaft , packet1.uptime , packet1.fuel_level , packet1.bridge_temperature , packet1.engine_temperature , packet1.motor_state , packet1.stg_errors_bitmask );
+    mavlink_msg_stg_status_new_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
 static void mavlink_test_stg_status(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 #ifdef MAVLINK_STATUS_FLAG_OUT_MAVLINK1
@@ -10888,6 +10953,7 @@ static void mavlink_test_common(uint8_t system_id, uint8_t component_id, mavlink
     mavlink_test_smart_battery_status(system_id, component_id, last_msg);
     mavlink_test_time_estimate_to_target(system_id, component_id, last_msg);
     mavlink_test_wheel_distance(system_id, component_id, last_msg);
+    mavlink_test_stg_status_new(system_id, component_id, last_msg);
     mavlink_test_stg_status(system_id, component_id, last_msg);
 }
 
