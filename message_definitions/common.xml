@@ -38,6 +38,34 @@
             <entry value="4" name="MAV_STG_DO_VERTICALC">
                 <description>Turt to vertical.</description>
             </entry>
+            <entry value="5" name="MAV_STG_DO_IDLE_THROTTLE">
+                <description>Idle throttle.</description>
+            </entry>
+            <entry value="6" name="MAV_STG_DO_FULL_THROTTLE">
+                <description>Full throttle.</description>
+            </entry>
+            <entry value="7" name="MAV_STG_DO_TAKEOFF_THROTTLE">
+                <description>Full throttle.</description>
+            </entry>
+            <entry value="8" name="MAV_STG_DO_RESERVED">
+                <description>Reserved.</description>
+            </entry>
+
+        </enum>
+        <enum name="MAV_PARACHUTE_DO">
+            <description>Enumeration of parachute actions</description>
+            <entry value="0" name="MAV_PARACHUTE_DO_RELEASE">
+                <description>Release parachute.</description>
+            </entry>
+            <entry value="1" name="MAV_PARACHUTE_DO_DROP">
+                <description>Drop parachute.</description>
+            </entry>
+            <entry value="2" name="MAV_PARACHUTE_DO_CLOSE">
+                <description>Close parachute.</description>
+            </entry>
+            <entry value="3" name="MAV_PARACHUTE_DO_RESERVED">
+                <description>Reserved.</description>
+            </entry>
         </enum>
         <enum name="MAV_STG_MOTOR_STATE">
             <description>Motor state.</description>
@@ -836,31 +864,15 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
-      <entry value="20001" name="MAV_CMD_STG_ACTION" hasLocation="false" isDestination="false">
+      <entry value="27601" name="MAV_CMD_STG_ACTION" hasLocation="false" isDestination="false">
         <description>Motor action.</description>
         <param index="1" label="State" enum="MAV_STG_DO">Action.</param>
       </entry>
-      <entry value="60666" name="MAV_CMD_RELEASE_BUFFER_PARACHUTE" hasLocation="false" isDestination="false">
-        <description>Release buffer and parachute.</description>
-        <param index="1">Empty</param>
-        <param index="2">Empty</param>
-        <param index="3">Empty</param>
-        <param index="4">Empty</param>
-        <param index="5">Empty</param>
-        <param index="6">Empty</param>
-        <param index="7">Empty</param>
+      <entry value="27602" name="MAV_CMD_PARACHUTE_ACTION" hasLocation="false" isDestination="false">
+        <description>Parachute action.</description>
+        <param index="1" label="State" enum="MAV_PARACHUTE_DO">Action.</param>
       </entry>
-      <entry value="60667" name="MAV_CMD_DROP_BUFFER_PARACHUTE" hasLocation="false" isDestination="false">
-        <description>Drop buffer and parachute.</description>
-        <param index="1">Empty</param>
-        <param index="2">Empty</param>
-        <param index="3">Empty</param>
-        <param index="4">Empty</param>
-        <param index="5">Empty</param>
-        <param index="6">Empty</param>
-        <param index="7">Empty</param>
-      </entry>
-      <entry value="60300" name="MAV_CMD_SWITCH_REMOTE_OVERRIDE_MODE" hasLocation="false" isDestination="false">
+      <entry value="27603" name="MAV_CMD_SWITCH_REMOTE_OVERRIDE_MODE" hasLocation="false" isDestination="false">
         <description>Switch between remote control mode and channels override mode.</description>
         <param index="1" label="toggle">toggle</param>
         <param index="2">Empty</param>
@@ -870,9 +882,13 @@
         <param index="6">Empty</param>
         <param index="7">Empty</param>
       </entry>
-      <entry value="60606" name="MAV_CMD_DO_ENGINE_ACTION" hasLocation="false" isDestination="false">
+      <entry value="27604" name="MAV_CMD_DO_ENGINE_ACTION" hasLocation="false" isDestination="false">
         <description>Engine action.</description>
         <param index="1" label="State" enum="MAV_ENGINE_ACTION">Engine action.</param>
+      </entry>
+      <entry value="27605" name="MAV_CMD_BANO_ON_OFF" hasLocation="false" isDestination="false">
+        <description>0: BANO OFF, 1: BANO ON.</description>
+        <param index="1" label="Enable">Enable</param>
       </entry>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true">
         <description>Navigate to waypoint.</description>
@@ -4609,6 +4625,11 @@
       <field type="int32_t" name="time_remaining" units="s">Remaining battery time, 0: autopilot does not provide remaining battery time estimate</field>
       <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
     </message>
+    <message id="20002" name="ADC_REPORT">
+      <description>Raw data from adc</description>
+      <field type="uint16_t[12]" name="channel_id">ADC channel IDs, negative for non-existent.</field>
+      <field type="float[12]" name="channel_value"> ADC channel value in volt, valid if channel ID is positive.</field>
+    </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software</description>
       <field type="uint64_t" name="capabilities" enum="MAV_PROTOCOL_CAPABILITY" display="bitmask">Bitmap of capabilities</field>
@@ -4937,13 +4958,15 @@
       <field type="float" name="write_speed" units="MiB/s">Write speed.</field>
     </message>
     <message id="262" name="CAMERA_CAPTURE_STATUS">
-      <description>Information about the status of a capture.</description>
+      <description>Information about the status of a capture. Can be requested with a MAV_CMD_REQUEST_MESSAGE command.</description>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp (time since system boot).</field>
       <field type="uint8_t" name="image_status">Current status of image capturing (0: idle, 1: capture in progress, 2: interval set but idle, 3: interval set and capture in progress)</field>
       <field type="uint8_t" name="video_status">Current status of video capturing (0: idle, 1: capture in progress)</field>
       <field type="float" name="image_interval" units="s">Image capture interval</field>
       <field type="uint32_t" name="recording_time_ms" units="ms">Time since recording started</field>
       <field type="float" name="available_capacity" units="MiB">Available storage capacity.</field>
+      <extensions/>
+      <field type="int32_t" name="image_count">Total number of images captured ('forever', or until reset using MAV_CMD_STORAGE_FORMAT).</field>
     </message>
     <message id="263" name="CAMERA_IMAGE_CAPTURED">
       <description>Information about a captured image</description>
@@ -5266,7 +5289,22 @@
       <field type="uint8_t" name="count">Number of wheels reported.</field>
       <field type="double[16]" name="distance" units="m">Distance reported by individual wheel encoders. Forward rotations increase values, reverse rotations decrease them. Not all wheels will necessarily have wheel encoders; the mapping of encoders to wheel positions must be agreed/understood by the endpoints.</field>
     </message>
-     <message id="20000" name="STG_STATUS">
+     <message id="20001" name="STG_STATUS_NEW">
+            <description>STG state</description>
+            <field type="uint16_t" name="voltage_battery" units="mV">Battery voltage.</field>
+            <field type="uint16_t" name="voltage_generator" units="mV">Generator voltage.</field>
+            <field type="uint16_t" name="current_battery" units="mA">Battery current.</field>
+            <field type="uint16_t" name="power_load" units="W">Load power.</field>
+            <field type="uint16_t" name="current_charge" units="mA">Charger current. 0 - charging stopped.</field>
+            <field type="int16_t" name="rpm_cranckshaft" units="rpm">Cranckshaft rotations per minute.</field>
+            <field type="uint16_t" name="uptime" units="s">Uptime.</field>
+            <field type="uint8_t" name="fuel_level" units="%">Fuel level in persent.</field>
+            <field type="uint8_t" name="bridge_temperature" units="degC">Bridge temperature.</field>
+            <field type="uint8_t" name="engine_temperature" units="degC">Engine temperature.</field>
+            <field type="uint8_t" name="motor_state" enum="MAV_STG_MOTOR_STATE">Motor state.</field>
+            <field type="uint8_t" name="stg_errors_bitmask" enum="MAV_STG_FLAG_ERRORS">Errors bitmask.</field>
+        </message>
+        <message id="20000" name="STG_STATUS">
             <description>STG state</description>
             <field type="uint16_t" name="voltage_battery" units="mV">Battery voltage.</field>
             <field type="uint16_t" name="voltage_generator" units="mV">Generator voltage.</field>
@@ -5282,6 +5320,6 @@
             <field type="uint16_t" name="uptime" units="s">Uptime.</field>
             <field type="uint8_t" name="motor_state" enum="MAV_STG_MOTOR_STATE">Motor state.</field>
             <field type="uint8_t" name="stg_errors_bitmask" enum="MAV_STG_FLAG_ERRORS">Errors bitmask.</field>
-        </message> 
+        </message>
   </messages>
 </mavlink>
