@@ -3,6 +3,111 @@
   <version>3</version>
   <dialect>0</dialect>
   <enums>
+    <enum name="MAV_ENGINE_ACTION">
+      <description>Enumeration of engine actions</description>
+      <entry value="0" name="MAV_ENGINE_ACTION_STOP">
+        <description>Stop.</description>
+      </entry>
+      <entry value="1" name="MAV_ENGINE_ACTION_START">
+        <description>Starting.</description>
+      </entry>
+      <entry value="2" name="MAV_ENGINE_ACTION_1">
+        <description>Reserved.</description>
+      </entry>
+      <entry value="3" name="MAV_ENGINE_ACTION_2">
+        <description>Reserved.</description>
+      </entry>
+      <entry value="4" name="MAV_ENGINE_ACTION_3">
+        <description>Reserved.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_STG_DO">
+      <description>Enumeration of motor actions</description>
+      <entry value="0" name="MAV_STG_DO_WAIT">
+        <description>Waiting.</description>
+      </entry>
+      <entry value="1" name="MAV_STG_DO_START">
+        <description>Starting.</description>
+      </entry>
+      <entry value="2" name="MAV_STG_DO_STOP_STARTING">
+        <description>Stop starting.</description>
+      </entry>
+      <entry value="3" name="MAV_STG_DO_HORIZON">
+        <description>Turn to horizon.</description>
+      </entry>
+      <entry value="4" name="MAV_STG_DO_VERTICALC">
+        <description>Turt to vertical.</description>
+      </entry>
+      <entry value="5" name="MAV_STG_DO_IDLE_THROTTLE">
+        <description>Idle throttle.</description>
+      </entry>
+        <entry value="6" name="MAV_STG_DO_FULL_THROTTLE">
+          <description>Full throttle.</description>
+        </entry>
+        <entry value="7" name="MAV_STG_DO_TAKEOFF_THROTTLE">
+          <description>Full throttle.</description>
+        </entry>
+        <entry value="8" name="MAV_STG_DO_RESERVED">
+          <description>Reserved.</description>
+        </entry>
+    </enum>
+    <enum name="MAV_PARACHUTE_DO">
+      <description>Enumeration of parachute actions</description>
+      <entry value="0" name="MAV_PARACHUTE_DO_RELEASE">
+        <description>Release parachute.</description>
+      </entry>
+      <entry value="1" name="MAV_PARACHUTE_DO_DROP">
+        <description>Drop parachute.</description>
+      </entry>
+      <entry value="2" name="MAV_PARACHUTE_DO_CLOSE">
+        <description>Close parachute.</description>
+      </entry>
+      <entry value="3" name="MAV_PARACHUTE_DO_RESERVED">
+        <description>Reserved.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_STG_MOTOR_STATE">
+      <description>Motor state.</description>
+      <entry value="0" name="MAV_STG_MOTOR_STATE_WAITING">
+        <description>Waiting.</description>
+      </entry>
+      <entry value="1" name="MAV_STG_MOTOR_STATE_STARTING">
+        <description>Starting.</description>
+      </entry>
+      <entry value="2" name="MAV_STG_MOTOR_STATE_STARTED">
+        <description>Started.</description>
+      </entry>
+      <entry value="3" name="MAV_STG_MOTOR_STATE_ERROR">
+        <description>Fault.</description>
+      </entry>
+    </enum>
+    <enum name="MAV_STG_FLAG_ERRORS" bitmask="true">
+      <description>STG's bitmask errors.</description>
+      <entry value="1" name="MAV_STG_FLAG_ERRORS_STARTING_FAILURE">
+        <description>Motor starting failure.</description>
+      </entry>
+      <entry value="2" name="MAV_STG_FLAG_ERRORS_INCONSISTENT_HALLS">
+        <description>Hall values inconsistent.</description>
+      </entry>
+      <entry value="4" name="MAV_STG_FLAG_ERRORS_STALLED_CRANCKSHAFT">
+        <description>Cranckshaft stalled.</description>
+      </entry>
+      <entry value="8" name="MAV_STG_FLAG_ERRORS_CRYSTAL_FAILURE">
+        <description>Crystal failure, HSI enabled.</description>
+      </entry>
+      <entry value="16" name="MAV_STG_FLAG_ERRORS_START_CANCELLATION">
+        <description>Start cancellation.</description>
+      </entry>
+      <entry value="32" name="MAV_STG_FLAG_ERRORS_RESERVED_1">
+        <description>Reserved for future use.</description>
+      </entry>
+      <entry value="64" name="MAV_STG_FLAG_ERRORS_RESERVED_2">
+        <description>Reserved for future use.</description>
+      </entry>
+      <entry value="128" name="MAV_STG_FLAG_ERRORS_RESERVED_3">
+        <description>Reserved for future use.</description>
+      </entry>
+    </enum>
     <enum name="MAV_AUTOPILOT">
       <description>Micro air vehicle / autopilot classes. This identifies the individual model.</description>
       <entry value="0" name="MAV_AUTOPILOT_GENERIC">
@@ -1412,6 +1517,36 @@
     <!-- ALL the entries in the MAV_CMD enum have a maximum of 7 parameters -->
     <enum name="MAV_CMD">
       <description>Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. NaN and INT32_MAX may be used in float/integer params (respectively) to indicate optional/default values (e.g. to use the component's current yaw or latitude rather than a specific value). See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries</description>
+      <entry value="27601" name="MAV_CMD_STG_ACTION" hasLocation="false" isDestination="false">
+        <description>Motor action.</description>
+        <param index="1" label="State" enum="MAV_STG_DO">Action.</param>
+      </entry>
+      <entry value="27602" name="MAV_CMD_PARACHUTE_ACTION" hasLocation="false" isDestination="false">
+        <description>Parachute action.</description>
+        <param index="1" label="State" enum="MAV_PARACHUTE_DO">Action.</param>
+      </entry>
+      <entry value="27603" name="MAV_CMD_SWITCH_REMOTE_OVERRIDE_MODE" hasLocation="false" isDestination="false">
+        <description>Switch between remote control mode and channels override mode.</description>
+        <param index="1" label="toggle">toggle</param>
+        <param index="2">Empty</param>
+        <param index="3">Empty</param>
+        <param index="4">Empty</param>
+        <param index="5">Empty</param>
+        <param index="6">Empty</param>
+        <param index="7">Empty</param>
+      </entry>
+      <entry value="27604" name="MAV_CMD_DO_ENGINE_ACTION" hasLocation="false" isDestination="false">
+        <description>Engine action.</description>
+        <param index="1" label="State" enum="MAV_ENGINE_ACTION">Engine action.</param>
+      </entry>
+      <entry value="27605" name="MAV_CMD_BANO_ON_OFF" hasLocation="false" isDestination="false">
+        <description>0: BANO OFF, 1: BANO ON.</description>
+        <param index="1" label="Enable">Enable</param>
+      </entry>
+      <entry value="27607" name="MAV_CMD_PAYLOAD_ENABLE" hasLocation="false" isDestination="false">
+        <description>0: Payload OFF, 1: Payload ON.</description>
+        <param index="1" label="Enable">Enable</param>
+      </entry>
       <entry value="16" name="MAV_CMD_NAV_WAYPOINT" hasLocation="true" isDestination="true">
         <description>Navigate to waypoint.</description>
         <param index="1" label="Hold" units="s" minValue="0">Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)</param>
@@ -7312,5 +7447,37 @@
       <field type="uint8_t" name="msg_pack_size">Number of encoded messages in the pack (not the number of bytes). Allowed range is 1 - 10.</field>
       <field type="uint8_t[250]" name="messages">Concatenation of encoded OpenDroneID messages. Shall be filled with nulls in the unused portion of the field.</field>
     </message>
+    <message id="20001" name="STG_STATUS_NEW">
+      <description>STG state</description>
+      <field type="uint16_t" name="voltage_battery" units="mV">Battery voltage.</field>
+      <field type="uint16_t" name="voltage_generator" units="mV">Generator voltage.</field>
+      <field type="uint16_t" name="current_battery" units="mA">Battery current.</field>
+      <field type="uint16_t" name="power_load" units="W">Load power.</field>
+      <field type="uint16_t" name="current_charge" units="mA">Charger current. 0 - charging stopped.</field>
+      <field type="int16_t" name="rpm_cranckshaft" units="rpm">Cranckshaft rotations per minute.</field>
+      <field type="uint16_t" name="uptime" units="s">Uptime.</field>
+      <field type="uint8_t" name="fuel_level" units="%">Fuel level in persent.</field>
+      <field type="uint8_t" name="bridge_temperature" units="degC">Bridge temperature.</field>
+      <field type="uint8_t" name="engine_temperature" units="degC">Engine temperature.</field>
+      <field type="uint8_t" name="motor_state" enum="MAV_STG_MOTOR_STATE">Motor state.</field>
+      <field type="uint8_t" name="stg_errors_bitmask" enum="MAV_STG_FLAG_ERRORS">Errors bitmask.</field>
+  </message>
+  <message id="20000" name="STG_STATUS">
+      <description>STG state</description>
+      <field type="uint16_t" name="voltage_battery" units="mV">Battery voltage.</field>
+      <field type="uint16_t" name="voltage_generator" units="mV">Generator voltage.</field>
+      <field type="uint16_t" name="current_battery" units="mA">Battery current.</field>
+      <field type="uint16_t" name="current_generator" units="mA">Generator current.</field>
+      <field type="uint16_t" name="power_load" units="W">Load power.</field>
+      <field type="uint16_t" name="current_charge" units="mA">Charger current. 0 - charging stopped.</field>
+      <field type="int16_t" name="temperarture_bridge" units="degC">Bridge temperature.</field>
+      <field type="uint8_t" name="current_starter" units="A">Maximal starting current.</field>
+      <field type="int16_t" name="voltage_drop" units="mV">Voltage drop during starting.</field>
+      <field type="int16_t" name="rpm_cranckshaft" units="rpm">Cranckshaft rotations per minute.</field>
+      <field type="int16_t" name="halls_errors">Hall errors durin motor operation.</field>
+      <field type="uint16_t" name="uptime" units="s">Uptime.</field>
+      <field type="uint8_t" name="motor_state" enum="MAV_STG_MOTOR_STATE">Motor state.</field>
+      <field type="uint8_t" name="stg_errors_bitmask" enum="MAV_STG_FLAG_ERRORS">Errors bitmask.</field>
+  </message>
   </messages>
 </mavlink>
